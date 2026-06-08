@@ -4,6 +4,8 @@ import Home from './pages/Home';
 import Overview from './pages/Overview';
 import QuizPage from './pages/QuizPage';
 import Stats from './pages/Stats';
+import Clubs from './pages/Clubs';
+import ClubDetail from './pages/ClubDetail';
 import './styles/App.css';
 
 export default function App() {
@@ -14,6 +16,8 @@ export default function App() {
         <Route path="/overzicht" element={<Overview />} />
         <Route path="/overhoren" element={<QuizPage />} />
         <Route path="/statistieken" element={<Stats />} />
+        <Route path="/clubs" element={<Clubs />} />
+        <Route path="/clubs/:slug" element={<ClubDetail />} />
       </Routes>
     </Layout>
   );

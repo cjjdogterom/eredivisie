@@ -63,6 +63,14 @@ export default function Home() {
               Kies je moeilijkheidsgraad.
             </p>
           </Link>
+          <Link to="/clubs" className="feature-card">
+            <span className="feature-icon">⚽</span>
+            <h3>Per club</h3>
+            <p>
+              Bekijk per club wanneer ze kampioen werden, met ezelsbruggetjes
+              om de jaren te onthouden.
+            </p>
+          </Link>
           <Link to="/statistieken" className="feature-card">
             <span className="feature-icon">📊</span>
             <h3>Statistieken</h3>

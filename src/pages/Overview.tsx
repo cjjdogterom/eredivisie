@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { champions } from '../data/champions';
+import { clubToSlug, getClubMeta } from '../data/clubMeta';
+import ClubLogo from '../components/ClubLogo';
 import type { Era } from '../types';
 import '../styles/Overview.css';
 
@@ -37,11 +40,14 @@ export default function Overview() {
 
       if (!query) return true;
 
+      const meta = c.club ? getClubMeta(c.club) : null;
+
       return (
         c.season.toLowerCase().includes(query) ||
         c.club?.toLowerCase().includes(query) ||
         c.city?.toLowerCase().includes(query) ||
-        c.note?.toLowerCase().includes(query)
+        c.note?.toLowerCase().includes(query) ||
+        meta?.mnemonic?.toLowerCase().includes(query)
       );
     });
   }, [search, eraFilter, decade]);
@@ -99,30 +105,46 @@ export default function Overview() {
               <th>Kampioen</th>
               <th>Stad</th>
               <th>Tijdperk</th>
+              <th>Ezelsbruggetje</th>
               <th>Opmerking</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((c) => (
-              <tr key={c.id} className={c.club ? '' : 'no-champion'}>
-                <td className="season-cell">{c.season}</td>
-                <td className="club-cell">
-                  {c.club ? (
-                    <>
-                      <span className="club-badge">{c.club.charAt(0)}</span>
-                      {c.club}
-                    </>
-                  ) : (
-                    <span className="no-winner">—</span>
-                  )}
-                </td>
-                <td>{c.city ?? '—'}</td>
-                <td>
-                  <span className={`era-tag era-${c.era}`}>{eraLabels[c.era]}</span>
-                </td>
-                <td className="note-cell">{c.note ?? ''}</td>
-              </tr>
-            ))}
+            {filtered.map((c) => {
+              const meta = c.club ? getClubMeta(c.club) : null;
+
+              return (
+                <tr key={c.id} className={c.club ? '' : 'no-champion'}>
+                  <td className="season-cell">{c.season}</td>
+                  <td className="club-cell">
+                    {c.club ? (
+                      <>
+                        <ClubLogo club={c.club} size={32} />
+                        <Link to={`/clubs/${clubToSlug(c.club)}`} className="club-link">
+                          {c.club}
+                        </Link>
+                      </>
+                    ) : (
+                      <span className="no-winner">—</span>
+                    )}
+                  </td>
+                  <td>{c.city ?? '—'}</td>
+                  <td>
+                    <span className={`era-tag era-${c.era}`}>{eraLabels[c.era]}</span>
+                  </td>
+                  <td className="mnemonic-cell">
+                    {meta?.mnemonic ? (
+                      <span className="mnemonic-tooltip" title={meta.mnemonicDetail}>
+                        🧠 {meta.mnemonic}
+                      </span>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="note-cell">{c.note ?? ''}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

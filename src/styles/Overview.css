@@ -80,22 +80,43 @@
 .club-cell {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   font-weight: 600;
 }
 
-.club-badge {
+.club-link {
+  color: var(--text-dark);
+  transition: color 0.2s;
+}
+
+.club-link:hover {
+  color: var(--primary-color);
+}
+
+.club-logo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: var(--primary-color);
-  color: white;
   border-radius: 50%;
-  font-size: 0.75rem;
-  font-weight: 800;
   flex-shrink: 0;
+  object-fit: contain;
+}
+
+.club-logo-img {
+  background: white;
+  padding: 2px;
+  border: 1px solid var(--border-color);
+}
+
+.club-logo-fallback {
+  color: white;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.club-logo-empty {
+  color: var(--text-light);
+  font-size: 0.85rem;
 }
 
 .no-winner {
@@ -127,6 +148,17 @@
   color: var(--secondary-color);
 }
 
+.mnemonic-cell {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  max-width: 220px;
+  line-height: 1.35;
+}
+
+.mnemonic-tooltip {
+  cursor: help;
+}
+
 .note-cell {
   font-size: 0.85rem;
   color: var(--text-light);
@@ -140,5 +172,9 @@
 
   .filter-select {
     width: 100%;
+  }
+
+  .mnemonic-cell {
+    display: none;
   }
 }

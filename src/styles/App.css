@@ -424,3 +424,32 @@
     font-size: 1.5rem;
   }
 }
+
+.quiz-quick-start {
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.08), rgba(5, 150, 105, 0.06));
+  border: 2px solid rgba(30, 64, 175, 0.15);
+  padding: 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.quick-start-hint {
+  margin-top: 0.75rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.all-years-option {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.slider-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}

@@ -1,18 +1,14 @@
 import { useCallback, useState } from 'react';
 import { generateQuiz, getScoreFeedback } from '../utils/quiz';
-import type { QuizMode, QuizQuestion } from '../types';
+import type { QuizOptions } from '../utils/quiz';
+import { getClubMeta } from '../data/clubMeta';
+import ClubLogo from './ClubLogo';
 import '../styles/Quiz.css';
 
-interface QuizProps {
-  questionCount: number;
-  mode: QuizMode;
-  eraFilter: 'all' | 'eredivisie' | 'voor-eredivisie';
-}
+interface QuizProps extends QuizOptions {}
 
-export default function Quiz({ questionCount, mode, eraFilter }: QuizProps) {
-  const [questions, setQuestions] = useState<QuizQuestion[]>(() =>
-    generateQuiz(questionCount, mode, eraFilter)
-  );
+export default function Quiz(props: QuizProps) {
+  const [questions, setQuestions] = useState(() => generateQuiz(props));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -42,12 +38,17 @@ export default function Quiz({ questionCount, mode, eraFilter }: QuizProps) {
   };
 
   const handleRestart = () => {
-    setQuestions(generateQuiz(questionCount, mode, eraFilter));
+    setQuestions(generateQuiz(props));
     setCurrentIndex(0);
     setScore(0);
     setSelected(null);
     setFinished(false);
   };
+
+  const wrongMeta =
+    isAnswered && selected !== current.correctAnswer
+      ? getClubMeta(current.champion.club)
+      : null;
 
   if (finished) {
     const percentage = Math.round((score / questions.length) * 100);
@@ -78,6 +79,9 @@ export default function Quiz({ questionCount, mode, eraFilter }: QuizProps) {
       <div className="quiz-header">
         <span className="progress">
           Vraag {currentIndex + 1} van {questions.length}
+          {props.order === 'chronological' && (
+            <span className="order-badge"> · Op volgorde</span>
+          )}
         </span>
         <span className="score-display">Score: {score}</span>
       </div>
@@ -95,6 +99,8 @@ export default function Quiz({ questionCount, mode, eraFilter }: QuizProps) {
               else if (option === selected) className += ' incorrect';
             }
 
+            const showLogo = current.type === 'season-to-club';
+
             return (
               <button
                 key={option}
@@ -102,7 +108,8 @@ export default function Quiz({ questionCount, mode, eraFilter }: QuizProps) {
                 onClick={() => handleAnswer(option)}
                 disabled={isAnswered}
               >
-                {option}
+                {showLogo && <ClubLogo club={option} size={24} />}
+                <span>{option}</span>
               </button>
             );
           })}
@@ -116,10 +123,23 @@ export default function Quiz({ questionCount, mode, eraFilter }: QuizProps) {
               }`}
             >
               <p>
-                {selected === current.correctAnswer
-                  ? '✓ Goed antwoord!'
-                  : `✗ Helaas! Het juiste antwoord is: ${current.correctAnswer}`}
+                {selected === current.correctAnswer ? (
+                  '✓ Goed antwoord!'
+                ) : (
+                  <>
+                    ✗ Helaas! Het juiste antwoord is:{' '}
+                    <strong>{current.correctAnswer}</strong>
+                    {current.type === 'season-to-club' && (
+                      <ClubLogo club={current.correctAnswer} size={20} />
+                    )}
+                  </>
+                )}
               </p>
+              {wrongMeta?.mnemonic && selected !== current.correctAnswer && (
+                <p className="mnemonic-hint">
+                  🧠 Ezelsbruggetje ({current.champion.club}): {wrongMeta.mnemonic}
+                </p>
+              )}
             </div>
             <button className="next-btn" onClick={handleNext}>
               {currentIndex < questions.length - 1 ? 'Volgende vraag' : 'Bekijk resultaat'}

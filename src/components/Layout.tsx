@@ -8,6 +8,7 @@ interface LayoutProps {
 const navItems = [
   { path: '/', label: 'Home', icon: '🏠' },
   { path: '/overzicht', label: 'Overzicht', icon: '📋' },
+  { path: '/clubs', label: 'Clubs', icon: '⚽' },
   { path: '/overhoren', label: 'Overhoren', icon: '🎓' },
   { path: '/statistieken', label: 'Statistieken', icon: '📊' },
 ];
@@ -31,7 +32,12 @@ export default function Layout({ children }: LayoutProps) {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                className={`nav-link ${
+                  location.pathname === item.path ||
+                  (item.path === '/clubs' && location.pathname.startsWith('/clubs'))
+                    ? 'active'
+                    : ''
+                }`}
               >
                 <span className="nav-icon">{item.icon}</span>
                 {item.label}

@@ -21,6 +21,8 @@ export interface ClubStats {
 
 export type QuizMode = 'season-to-club' | 'club-to-season' | 'mixed';
 
+export type QuizOrder = 'random' | 'chronological' | 'reverse-chronological';
+
 export interface QuizQuestion {
   id: string;
   type: 'season-to-club' | 'club-to-season';

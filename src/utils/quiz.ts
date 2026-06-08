@@ -1,5 +1,13 @@
 import { championsWithWinner, getUniqueClubs } from '../data/champions';
-import type { Champion, QuizMode, QuizQuestion } from '../types';
+import type { Champion, QuizMode, QuizOrder, QuizQuestion } from '../types';
+
+export interface QuizOptions {
+  count: number;
+  mode: QuizMode;
+  eraFilter: 'all' | 'eredivisie' | 'voor-eredivisie';
+  order: QuizOrder;
+  allYears: boolean;
+}
 
 function shuffle<T>(array: T[]): T[] {
   const copy = [...array];
@@ -43,11 +51,32 @@ function createClubToSeasonQuestion(champion: Champion): QuizQuestion {
   };
 }
 
-export function generateQuiz(
-  count: number,
-  mode: QuizMode,
-  eraFilter: 'all' | 'eredivisie' | 'voor-eredivisie' = 'all'
-): QuizQuestion[] {
+function orderPool(pool: Champion[], order: QuizOrder): Champion[] {
+  const sorted = [...pool].sort((a, b) => a.year - b.year);
+  if (order === 'reverse-chronological') return sorted.reverse();
+  if (order === 'chronological') return sorted;
+  return shuffle(pool);
+}
+
+function resolveQuestionType(mode: QuizMode, index: number): 'season-to-club' | 'club-to-season' {
+  if (mode === 'season-to-club') return 'season-to-club';
+  if (mode === 'club-to-season') return 'club-to-season';
+  return index % 2 === 0 ? 'season-to-club' : 'club-to-season';
+}
+
+export function getPoolSize(eraFilter: QuizOptions['eraFilter']): number {
+  if (eraFilter === 'eredivisie') {
+    return championsWithWinner.filter((c) => c.era === 'eredivisie').length;
+  }
+  if (eraFilter === 'voor-eredivisie') {
+    return championsWithWinner.filter((c) => c.era === 'voor-eredivisie').length;
+  }
+  return championsWithWinner.length;
+}
+
+export function generateQuiz(options: QuizOptions): QuizQuestion[] {
+  const { mode, eraFilter, order, allYears } = options;
+
   let pool = championsWithWinner;
 
   if (eraFilter === 'eredivisie') {
@@ -56,16 +85,12 @@ export function generateQuiz(
     pool = pool.filter((c) => c.era === 'voor-eredivisie');
   }
 
-  const selected = shuffle(pool).slice(0, Math.min(count, pool.length));
+  const ordered = orderPool(pool, order);
+  const count = allYears ? pool.length : Math.min(options.count, pool.length);
+  const selected = ordered.slice(0, count);
 
-  return selected.map((champion) => {
-    const type =
-      mode === 'mixed'
-        ? Math.random() < 0.5
-          ? 'season-to-club'
-          : 'club-to-season'
-        : mode;
-
+  return selected.map((champion, index) => {
+    const type = resolveQuestionType(mode, index);
     return type === 'season-to-club'
       ? createSeasonToClubQuestion(champion)
       : createClubToSeasonQuestion(champion);
