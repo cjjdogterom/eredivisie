@@ -1,0 +1,6 @@
+{
+  "description": "Nederlandse landskampioenen sinds 1889. Bron: KNVB, RSSSF, Wikipedia.",
+  "lastUpdated": "2026-06-08",
+  "totalSeasons": 137,
+  "note": "Zie src/data/champions.ts voor de volledige dataset met TypeScript types."
+}
