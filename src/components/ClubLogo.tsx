@@ -42,7 +42,7 @@ export default function ClubLogo({ club, size = 32 }: ClubLogoProps) {
         width: size,
         height: size,
         backgroundColor: meta.color,
-        fontSize: size * 0.32,
+        fontSize: size * 0.28,
       }}
       title={club}
     >

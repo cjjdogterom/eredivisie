@@ -1,3 +1,5 @@
+import { getClubLogoPath } from './clubLogos';
+
 export interface ClubMeta {
   color: string;
   logo?: string;
@@ -10,7 +12,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   Ajax: {
     color: '#C8102E',
     shortName: 'AJA',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg',
     mnemonic: 'Acht keer in de jaren 60, drie keer op rij in de jaren 80 en 2010s',
     mnemonicDetail:
       'Ajax won 36 titels! Ezelsbruggetje: groepeer per decennium — begin (1917-19), gouden jaren 30 (1930-39), naoorlogse start (1946-47, 1956-57), dominantie 1965-73 (8x!), comeback 1978-85, triple 1993-96, en recent 2010-14 + 2018-22. Onthoud: "Zestig, tachtig, tien" = Ajax domineert elke grote voetbaleeuw.',
@@ -18,7 +19,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   PSV: {
     color: '#ED1C24',
     shortName: 'PSV',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg',
     mnemonic: 'PSV = Philips Stadion Victories: reeks 1985-89 en 2000-08',
     mnemonicDetail:
       'PSV won 27 titels. Ezelsbruggetje: "Vijf op rij" (1985-89), "Zeven in de jaren 2000" (2000-08), en recent 2014-18 + 2023-26. Philips uit Eindhoven = rood-wit macht in Brabant.',
@@ -26,7 +26,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   Feyenoord: {
     color: '#E30613',
     shortName: 'FEY',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Feyenoord_logo.svg',
     mnemonic: 'Feyenoord: de jaren 60, 70, en recent 2016-17 + 2022-23',
     mnemonicDetail:
       'Feyenoord won 16 titels. Ezelsbruggetje: "Zestig en zeventig" — 4 titels in de jaren 60, 3 in de jaren 70. Plus 1920s (1923-24, 1927-28), 1930s (1935-36, 1937-38), en de recente renaissance 2016-17 en 2022-23. Rotterdam = De Kuip = kampioen!',
@@ -41,7 +40,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'Sparta Rotterdam': {
     color: '#FF0000',
     shortName: 'SPA',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/8/8c/Sparta_Rotterdam.svg',
     mnemonic: 'Sparta: 4 op rij 1910-13, plus 1958-59 Eredivisie-titel',
     mnemonicDetail:
       'Sparta won 6 titels. Ezelsbruggetje: "Vier op rij voor de Eerste Wereldoorlog" (1910-13), en de verrassende Eredivisie-titel in 1958-59. Rotterdamse tweede club na Feyenoord.',
@@ -56,7 +54,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'Go Ahead Eagles': {
     color: '#FFD700',
     shortName: 'GAE',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/9/9e/Go_Ahead_Eagles_logo.svg',
     mnemonic: 'Go Ahead: Deventer kampioen in 1917, 1922, 1930 en 1933',
     mnemonicDetail:
       '4 titels verspreid over de vroege jaren. Ezelsbruggetje: "GA Eagles vlogen hoog" in 1916-17, 1921-22, 1929-30 en 1932-33.',
@@ -78,7 +75,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'Willem II': {
     color: '#1E3A8A',
     shortName: 'WII',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/8/8a/Willem_II_Tilburg.svg',
     mnemonic: 'Willem II: Tilburg kampioen in 1916, 1952 en 1955',
     mnemonicDetail:
       '3 titels voor de Tricolores. Ezelsbruggetje: "Willem wint in de jaren 50" — 1951-52 en 1954-55 vlak voor de Eredivisie.',
@@ -86,7 +82,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   AZ: {
     color: '#E30613',
     shortName: 'AZ',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/5/5c/AZ_Alkmaar.svg',
     mnemonic: 'AZ = Alkmaar Zangers: 1981 en 2009 — twee verrassende titels',
     mnemonicDetail:
       '2 titels die iedereen zich herinnert: 1980-81 (met Kees Kist) en 2008-09 (Louis van Gaal). Ezelsbruggetje: "Alkmaar Zingt Kampioen" op de 1 en de 9.',
@@ -94,7 +89,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'Heracles Almelo': {
     color: '#000000',
     shortName: 'HER',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Heracles_Almelo.svg',
     mnemonic: 'Heracles: Almelo kampioen in 1927 en 1941',
     mnemonicDetail:
       '2 titels in oorlogstijd en tussenoorlogse periode. Ezelsbruggetje: "Heracles de sterkste held" — 1926-27 en 1940-41.',
@@ -102,7 +96,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'ADO Den Haag': {
     color: '#FFD700',
     shortName: 'ADO',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/0/03/ADO_Den_Haag_logo.svg',
     mnemonic: 'ADO: 2 titels in de oorlogsjaren 1942 en 1943',
     mnemonicDetail:
       'Twee opeenvolgende titels tijdens WOII (1941-42 en 1942-43). Ezelsbruggetje: "ADO domineerde de oorlog" — uniek dubbel in die periode.',
@@ -117,7 +110,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'NAC Breda': {
     color: '#FFD700',
     shortName: 'NAC',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/4/4a/NAC_Breda_logo.svg',
     mnemonic: 'NAC: Breda kampioen in 1921 — enige titel',
     mnemonicDetail:
       'Eén titel in 1920-21. Ezelsbruggetje: "Nooit Achteruit, Kampioen!" — de enige keer dat NAC bovenaan eindigde.',
@@ -125,7 +117,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'FC Twente': {
     color: '#C8102E',
     shortName: 'TWE',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/3/3e/FC_Twente.svg',
     mnemonic: 'FC Twente: enige titel in 2010 — "Twente is kampioen!"',
     mnemonicDetail:
       'Eén Eredivisie-titel in 2009-10. Ezelsbruggetje: "Twente Tien" — het seizoen 2009/10, met McClaren als coach.',
@@ -133,7 +124,6 @@ export const clubMeta: Record<string, ClubMeta> = {
   'Roda JC': {
     color: '#FFD700',
     shortName: 'RJC',
-    logo: 'https://upload.wikimedia.org/wikipedia/en/6/6a/Roda_JC_logo.svg',
     mnemonic: 'Roda JC (als Rapid JC): kampioen 1956, laatste voor Eredivisie',
     mnemonicDetail:
       'Als Rapid JC de laatste kampioen vóór de Eredivisie (1955-56). Ezelsbruggetje: "Rapid naar Roda" — de club fuseerde later tot Roda JC.',
@@ -222,15 +212,21 @@ const defaultMeta: ClubMeta = {
 
 export function getClubMeta(club: string | null): ClubMeta {
   if (!club) return defaultMeta;
-  return clubMeta[club] ?? {
-    ...defaultMeta,
-    shortName: club
-      .split(' ')
-      .map((w) => w[0])
-      .join('')
-      .slice(0, 3)
-      .toUpperCase(),
-  };
+
+  const base =
+    clubMeta[club] ??
+    ({
+      ...defaultMeta,
+      shortName: club
+        .split(' ')
+        .map((w) => w[0])
+        .join('')
+        .slice(0, 3)
+        .toUpperCase(),
+    } as ClubMeta);
+
+  const logo = getClubLogoPath(club);
+  return logo ? { ...base, logo } : base;
 }
 
 export function clubToSlug(club: string): string {
