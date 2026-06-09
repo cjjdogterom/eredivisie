@@ -5,11 +5,11 @@ export const champions: Champion[] = [
   { id: '1889-90', season: '1889/90', year: 1890, club: 'HFC', city: 'Haarlem', era: 'voor-eredivisie' },
   { id: '1890-91', season: '1890/91', year: 1891, club: 'HVV', city: 'Den Haag', era: 'voor-eredivisie' },
   { id: '1891-92', season: '1891/92', year: 1892, club: 'RAP', city: 'Amsterdam', era: 'voor-eredivisie' },
-  { id: '1892-93', season: '1892/93', year: 1893, club: null, city: null, era: 'geen-kampioen', note: 'Niet toegekend' },
+  { id: '1892-93', season: '1892/93', year: 1893, club: 'HFC', city: 'Haarlem', era: 'voor-eredivisie' },
   { id: '1893-94', season: '1893/94', year: 1894, club: 'RAP', city: 'Amsterdam', era: 'voor-eredivisie' },
   { id: '1894-95', season: '1894/95', year: 1895, club: 'HFC', city: 'Haarlem', era: 'voor-eredivisie' },
   { id: '1895-96', season: '1895/96', year: 1896, club: 'HVV', city: 'Den Haag', era: 'voor-eredivisie' },
-  { id: '1896-97', season: '1896/97', year: 1897, club: null, city: null, era: 'geen-kampioen', note: 'Niet betwist (RAP en Vitesse sectiekampioen)' },
+  { id: '1896-97', season: '1896/97', year: 1897, club: 'RAP', city: 'Amsterdam', era: 'voor-eredivisie', note: 'Officieus; Vitesse was sectiekampioen' },
   { id: '1897-98', season: '1897/98', year: 1898, club: 'RAP', city: 'Amsterdam', era: 'voor-eredivisie' },
   { id: '1898-99', season: '1898/99', year: 1899, club: 'RAP', city: 'Amsterdam', era: 'voor-eredivisie' },
   { id: '1899-00', season: '1899/00', year: 1900, club: 'HVV', city: 'Den Haag', era: 'voor-eredivisie' },
@@ -150,7 +150,7 @@ export function getClubStats() {
     const existing = map.get(c.club!) ?? { total: 0, eredivisie: 0, seasons: [] };
     existing.total += 1;
     if (c.era === 'eredivisie') existing.eredivisie += 1;
-    existing.seasons.push(c.season);
+    existing.seasons.push(String(c.year));
     map.set(c.club!, existing);
   }
 

@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { championsWithWinner } from '../data/champions';
 import { getClubMeta, slugToClub } from '../data/clubMeta';
 import ClubLogo from '../components/ClubLogo';
+import { formatYear } from '../utils/format';
 import '../styles/Clubs.css';
 
 export default function ClubDetail() {
@@ -47,8 +48,8 @@ export default function ClubDetail() {
               ` · ${eredivisieTitles.length} Eredivisie`}
           </p>
           <p className="club-detail-range">
-            Eerste titel: {titles[0].season} · Laatste titel:{' '}
-            {titles[titles.length - 1].season}
+            Eerste titel: {formatYear(titles[0].year)} · Laatste titel:{' '}
+            {formatYear(titles[titles.length - 1].year)}
           </p>
         </div>
       </div>
@@ -70,7 +71,7 @@ export default function ClubDetail() {
         <div className="club-titles-timeline">
           {titles.map((t) => (
             <div key={t.id} className="title-entry">
-              <span className="title-season">{t.season}</span>
+              <span className="title-season">{formatYear(t.year)}</span>
               <span className={`era-tag era-${t.era}`}>
                 {t.era === 'eredivisie' ? 'Eredivisie' : 'Voor Eredivisie'}
               </span>

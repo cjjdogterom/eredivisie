@@ -6,18 +6,18 @@ import type { QuizMode, QuizOrder } from '../types';
 const modes: { value: QuizMode; label: string; description: string }[] = [
   {
     value: 'season-to-club',
-    label: 'Seizoen → Club',
-    description: 'Welke club werd kampioen in een bepaald seizoen?',
+    label: 'Jaar → Club',
+    description: 'Welke club werd kampioen in een bepaald jaar?',
   },
   {
     value: 'club-to-season',
-    label: 'Club → Seizoen',
-    description: 'In welk seizoen werd een club kampioen?',
+    label: 'Club → Jaar',
+    description: 'In welk jaar werd een club kampioen?',
   },
   {
     value: 'mixed',
     label: 'Gemengd',
-    description: 'Afwisselend seizoen→club en club→seizoen.',
+    description: 'Afwisselend jaar→club en club→jaar.',
   },
 ];
 
@@ -138,7 +138,7 @@ export default function QuizPage() {
           <h2>Tijdperk</h2>
           <div className="era-options">
             {[
-              { value: 'all' as const, label: `Alle seizoenen (${getPoolSize('all')})` },
+              { value: 'all' as const, label: `Alle jaren (${getPoolSize('all')})` },
               { value: 'eredivisie' as const, label: `Alleen Eredivisie (${getPoolSize('eredivisie')})` },
               {
                 value: 'voor-eredivisie' as const,

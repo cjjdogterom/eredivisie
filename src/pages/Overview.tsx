@@ -4,6 +4,7 @@ import { champions } from '../data/champions';
 import { clubToSlug, getClubMeta } from '../data/clubMeta';
 import ClubLogo from '../components/ClubLogo';
 import type { Era } from '../types';
+import { formatYear } from '../utils/format';
 import '../styles/Overview.css';
 
 type EraFilter = 'all' | Era;
@@ -43,6 +44,7 @@ export default function Overview() {
       const meta = c.club ? getClubMeta(c.club) : null;
 
       return (
+        String(c.year).includes(query) ||
         c.season.toLowerCase().includes(query) ||
         c.club?.toLowerCase().includes(query) ||
         c.city?.toLowerCase().includes(query) ||
@@ -58,7 +60,7 @@ export default function Overview() {
         <h1>Overzicht kampioenen</h1>
         <p>
           Alle {champions.length} seizoenen van het Nederlands landskampioenschap,
-          van 1888/89 tot 2025/26.
+          van 1889 tot 2026.
         </p>
       </div>
 
@@ -66,7 +68,7 @@ export default function Overview() {
         <input
           type="search"
           className="search-input"
-          placeholder="Zoek op seizoen, club of stad..."
+          placeholder="Zoek op jaar, club of stad..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -101,7 +103,7 @@ export default function Overview() {
         <table className="champions-table">
           <thead>
             <tr>
-              <th>Seizoen</th>
+              <th>Jaar</th>
               <th>Kampioen</th>
               <th>Stad</th>
               <th>Tijdperk</th>
@@ -115,7 +117,7 @@ export default function Overview() {
 
               return (
                 <tr key={c.id} className={c.club ? '' : 'no-champion'}>
-                  <td className="season-cell">{c.season}</td>
+                  <td className="season-cell">{formatYear(c.year)}</td>
                   <td className="club-cell">
                     {c.club ? (
                       <>

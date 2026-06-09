@@ -1,4 +1,6 @@
-import { championsWithWinner, getUniqueClubs } from '../data/champions';
+import { championsWithWinner } from '../data/champions';
+import { formatYear } from './format';
+import { getTotalTitlesForClub } from './answerMatch';
 import type { Champion, QuizMode, QuizOrder, QuizQuestion } from '../types';
 
 export interface QuizOptions {
@@ -18,35 +20,30 @@ function shuffle<T>(array: T[]): T[] {
   return copy;
 }
 
-function pickDistractors(correct: string, pool: string[], count: number): string[] {
-  const filtered = pool.filter((item) => item !== correct);
-  return shuffle(filtered).slice(0, count);
-}
-
 function createSeasonToClubQuestion(champion: Champion): QuizQuestion {
-  const clubs = getUniqueClubs();
-  const distractors = pickDistractors(champion.club!, clubs, 3);
-
   return {
     id: `s2c-${champion.id}`,
     type: 'season-to-club',
-    question: `Wie werd landskampioen in het seizoen ${champion.season}?`,
+    question: `Wie werd landskampioen in ${formatYear(champion.year)}?`,
     correctAnswer: champion.club!,
-    options: shuffle([champion.club!, ...distractors]),
+    correctYear: champion.year,
     champion,
   };
 }
 
 function createClubToSeasonQuestion(champion: Champion): QuizQuestion {
-  const seasons = championsWithWinner.map((c) => c.season);
-  const distractors = pickDistractors(champion.season, seasons, 3);
+  const club = champion.club!;
+  const total = getTotalTitlesForClub(club);
+  const decade = `${Math.floor(champion.year / 10) * 10}–${Math.floor(champion.year / 10) * 10 + 9}`;
+
+  const hint = total > 1 ? ` Tip: ${decade}.` : '';
 
   return {
     id: `c2s-${champion.id}`,
     type: 'club-to-season',
-    question: `In welk seizoen werd ${champion.club} landskampioen?`,
-    correctAnswer: champion.season,
-    options: shuffle([champion.season, ...distractors]),
+    question: `In welk jaar (einde competitie) werd ${club} kampioen?${hint}`,
+    correctAnswer: formatYear(champion.year),
+    correctYear: champion.year,
     champion,
   };
 }

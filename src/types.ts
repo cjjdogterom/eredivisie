@@ -28,6 +28,8 @@ export interface QuizQuestion {
   type: 'season-to-club' | 'club-to-season';
   question: string;
   correctAnswer: string;
-  options: string[];
+  correctYear: number;
   champion: Champion;
 }
+
+export type AnswerStatus = 'pending' | 'correct' | 'fuzzy' | 'wrong' | 'approved';
