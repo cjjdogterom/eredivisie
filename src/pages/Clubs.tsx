@@ -1,56 +1,58 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getClubStats } from '../data/champions';
-import { clubToSlug, getClubMeta } from '../data/clubMeta';
-import ClubLogo from '../components/ClubLogo';
+import { getMeta, getWinnerStats, useDataset } from '../data/DatasetContext';
+import EntityLogo from '../components/EntityLogo';
+import { entityToSlug } from '../utils/slug';
 import '../styles/Clubs.css';
 
 export default function Clubs() {
+  const dataset = useDataset();
+  const base = `/${dataset.id}`;
   const [search, setSearch] = useState('');
-  const clubs = getClubStats();
+  const winners = getWinnerStats(dataset);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    if (!q) return clubs;
-    return clubs.filter(
+    if (!q) return winners;
+    return winners.filter(
       (c) =>
-        c.club.toLowerCase().includes(q) ||
-        getClubMeta(c.club).mnemonic?.toLowerCase().includes(q)
+        c.winner.toLowerCase().includes(q) ||
+        getMeta(dataset, c.winner).mnemonic?.toLowerCase().includes(q)
     );
-  }, [clubs, search]);
+  }, [winners, search, dataset]);
 
   return (
     <div className="clubs-page">
       <div className="page-header">
-        <h1>Overzicht per club</h1>
+        <h1>Overzicht per {dataset.entityNoun}</h1>
         <p>
-          Bekijk wanneer elke club kampioen werd, met ezelsbruggetjes om de jaren
-          te onthouden.
+          Bekijk per {dataset.entityNoun} alle gewonnen titels, met ezelsbruggetjes om
+          de jaren te onthouden.
         </p>
       </div>
 
       <input
         type="search"
         className="search-input"
-        placeholder="Zoek op clubnaam..."
+        placeholder={`Zoek op naam van ${dataset.entityNoun}...`}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
       <div className="clubs-grid">
         {filtered.map((club) => {
-          const meta = getClubMeta(club.club);
+          const meta = getMeta(dataset, club.winner);
 
           return (
             <Link
-              key={club.club}
-              to={`/clubs/${clubToSlug(club.club)}`}
+              key={club.winner}
+              to={`${base}/winnaars/${entityToSlug(club.winner)}`}
               className="club-card"
             >
               <div className="club-card-header">
-                <ClubLogo club={club.club} size={48} />
+                <EntityLogo winner={club.winner} size={48} />
                 <div>
-                  <h3>{club.club}</h3>
+                  <h3>{club.winner}</h3>
                   <span className="club-title-count">
                     {club.totalTitles} {club.totalTitles === 1 ? 'titel' : 'titels'}
                   </span>
@@ -58,8 +60,8 @@ export default function Clubs() {
               </div>
 
               <div className="club-seasons-preview">
-                {club.seasons.map((s) => (
-                  <span key={s} className="season-chip">
+                {club.seasons.map((s, i) => (
+                  <span key={`${s}-${i}`} className="season-chip">
                     {s}
                   </span>
                 ))}

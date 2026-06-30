@@ -148,6 +148,21 @@
   color: var(--secondary-color);
 }
 
+.era-europacup-i {
+  background: rgba(100, 116, 139, 0.15);
+  color: #475569;
+}
+
+.era-champions-league {
+  background: rgba(30, 64, 175, 0.12);
+  color: var(--primary-color);
+}
+
+.club-logo-flag {
+  background: transparent;
+  border-radius: 0;
+}
+
 .mnemonic-cell {
   font-size: 0.8rem;
   color: var(--text-light);

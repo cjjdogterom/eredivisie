@@ -1,83 +1,83 @@
 import { Link } from 'react-router-dom';
-import { champions, championsWithWinner } from '../data/champions';
+import {
+  getUniqueWinners,
+  getWinnerStats,
+  useDataset,
+  winnersOnly,
+} from '../data/DatasetContext';
+
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 export default function Home() {
-  const eredivisieCount = champions.filter((c) => c.era === 'eredivisie' && c.club).length;
-  const uniqueClubs = new Set(championsWithWinner.map((c) => c.club)).size;
+  const dataset = useDataset();
+  const base = `/${dataset.id}`;
+  const stats = getWinnerStats(dataset);
+  const top = stats[0];
+  const uniqueWinners = getUniqueWinners(dataset).length;
+  const titlesWon = winnersOnly(dataset).length;
 
   return (
     <div className="home">
       <section className="hero">
         <div className="hero-content">
-          <span className="hero-badge">Nederlands voetbal sinds 1889</span>
-          <h1>Leer alle landskampioenen van Nederland</h1>
-          <p>
-            Van HVV en RAP tot Ajax, PSV en Feyenoord — ontdek het complete overzicht
-            van alle Nederlandse landskampioenen en test je kennis met interactieve quizzen.
-          </p>
+          <span className="hero-badge">{dataset.heroBadge}</span>
+          <h1>{dataset.heroTitle}</h1>
+          <p>{dataset.heroText}</p>
           <div className="hero-actions">
-            <Link to="/overzicht" className="btn btn-primary">
+            <Link to={`${base}/overzicht`} className="btn btn-primary">
               Bekijk overzicht
             </Link>
-            <Link to="/overhoren" className="btn btn-secondary">
+            <Link to={`${base}/overhoren`} className="btn btn-secondary">
               Start overhoring
             </Link>
           </div>
         </div>
         <div className="hero-stats">
           <div className="stat-card">
-            <span className="stat-number">{champions.length}</span>
-            <span className="stat-label">Seizoenen</span>
+            <span className="stat-number">{dataset.champions.length}</span>
+            <span className="stat-label">{capitalize(dataset.editionNounPlural)}</span>
           </div>
           <div className="stat-card">
-            <span className="stat-number">{championsWithWinner.length}</span>
-            <span className="stat-label">Kampioenschappen</span>
+            <span className="stat-number">{titlesWon}</span>
+            <span className="stat-label">Gewonnen titels</span>
           </div>
           <div className="stat-card">
-            <span className="stat-number">{uniqueClubs}</span>
-            <span className="stat-label">Unieke clubs</span>
+            <span className="stat-number">{uniqueWinners}</span>
+            <span className="stat-label">Unieke {dataset.entityNounPlural}</span>
           </div>
-          <div className="stat-card">
-            <span className="stat-number">{eredivisieCount}</span>
-            <span className="stat-label">Eredivisie-titels</span>
-          </div>
+          {top && (
+            <div className="stat-card">
+              <span className="stat-number">{top.totalTitles}</span>
+              <span className="stat-label">Record ({top.winner})</span>
+            </div>
+          )}
         </div>
       </section>
 
       <section className="features">
         <h2>Wat kun je doen?</h2>
         <div className="feature-grid">
-          <Link to="/overzicht" className="feature-card">
+          <Link to={`${base}/overzicht`} className="feature-card">
             <span className="feature-icon">📋</span>
             <h3>Compleet overzicht</h3>
-            <p>
-              Doorzoek en filter alle kampioenen van 1888/89 tot heden. Per seizoen,
-              club of tijdperk.
-            </p>
+            <p>Doorzoek en filter alle winnaars per jaar, {dataset.entityNoun} of periode.</p>
           </Link>
-          <Link to="/overhoren" className="feature-card">
+          <Link to={`${base}/overhoren`} className="feature-card">
             <span className="feature-icon">🎓</span>
             <h3>Overhoringsmodus</h3>
-            <p>
-              Test jezelf met quizzen: welke club werd kampioen? In welk seizoen?
-              Kies je moeilijkheidsgraad.
-            </p>
+            <p>Test jezelf met quizzen: wie won welk jaar, en in welk jaar won wie?</p>
           </Link>
-          <Link to="/clubs" className="feature-card">
+          <Link to={`${base}/winnaars`} className="feature-card">
             <span className="feature-icon">⚽</span>
-            <h3>Per club</h3>
-            <p>
-              Bekijk per club wanneer ze kampioen werden, met ezelsbruggetjes
-              om de jaren te onthouden.
-            </p>
+            <h3>Per {dataset.entityNoun}</h3>
+            <p>Bekijk per {dataset.entityNoun} alle gewonnen titels, met ezelsbruggetjes.</p>
           </Link>
-          <Link to="/statistieken" className="feature-card">
+          <Link to={`${base}/statistieken`} className="feature-card">
             <span className="feature-icon">📊</span>
             <h3>Statistieken</h3>
-            <p>
-              Bekijk welke clubs de meeste titels wonnen, van de Grote Drie tot
-              historische kampioenen als HVV en RAP.
-            </p>
+            <p>Bekijk welke {dataset.entityNounPlural} de meeste titels wonnen.</p>
           </Link>
         </div>
       </section>
@@ -85,22 +85,12 @@ export default function Home() {
       <section className="timeline-preview">
         <h2>Hoogtepunten uit de geschiedenis</h2>
         <div className="timeline">
-          <div className="timeline-item">
-            <span className="timeline-year">1889</span>
-            <p>HFC wordt een van de eerste kampioenen van Nederland.</p>
-          </div>
-          <div className="timeline-item">
-            <span className="timeline-year">1956</span>
-            <p>De Eredivisie wordt opgericht; Ajax wint het eerste seizoen.</p>
-          </div>
-          <div className="timeline-item">
-            <span className="timeline-year">1970</span>
-            <p>Feyenoord wint als eerste Nederlandse club de Europacup I.</p>
-          </div>
-          <div className="timeline-item">
-            <span className="timeline-year">2026</span>
-            <p>PSV verovert hun 27e landskampioenschap.</p>
-          </div>
+          {dataset.timeline.map((item) => (
+            <div key={item.year} className="timeline-item">
+              <span className="timeline-year">{item.year}</span>
+              <p>{item.text}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>

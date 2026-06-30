@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { getClubMeta } from '../data/clubMeta';
+import { getMeta, useDataset } from '../data/DatasetContext';
 
-interface ClubLogoProps {
-  club: string | null;
+interface EntityLogoProps {
+  winner: string | null;
   size?: number;
 }
 
-export default function ClubLogo({ club, size = 32 }: ClubLogoProps) {
+export default function EntityLogo({ winner, size = 32 }: EntityLogoProps) {
+  const dataset = useDataset();
   const [imgError, setImgError] = useState(false);
-  const meta = getClubMeta(club);
+  const meta = getMeta(dataset, winner);
 
-  if (!club) {
+  if (!winner) {
     return (
       <span
         className="club-logo club-logo-empty"
@@ -22,11 +23,23 @@ export default function ClubLogo({ club, size = 32 }: ClubLogoProps) {
     );
   }
 
+  if (meta.flag) {
+    return (
+      <span
+        className="club-logo club-logo-flag"
+        style={{ width: size, height: size, fontSize: size * 0.82, lineHeight: 1 }}
+        title={winner}
+      >
+        {meta.flag}
+      </span>
+    );
+  }
+
   if (meta.logo && !imgError) {
     return (
       <img
         src={meta.logo}
-        alt={`${club} logo`}
+        alt={`${winner} logo`}
         className="club-logo club-logo-img"
         style={{ width: size, height: size }}
         onError={() => setImgError(true)}
@@ -44,7 +57,7 @@ export default function ClubLogo({ club, size = 32 }: ClubLogoProps) {
         backgroundColor: meta.color,
         fontSize: size * 0.28,
       }}
-      title={club}
+      title={winner}
     >
       {meta.shortName}
     </span>

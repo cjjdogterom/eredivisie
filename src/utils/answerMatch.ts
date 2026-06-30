@@ -1,43 +1,9 @@
-import { championsWithWinner } from '../data/champions';
-
 export type MatchResult = 'exact' | 'fuzzy' | 'wrong';
 
 export interface AnswerCheck {
   result: MatchResult;
   message?: string;
 }
-
-const clubAliases: Record<string, string[]> = {
-  Ajax: ['ajax', 'afc ajax', 'ajax amsterdam'],
-  PSV: ['psv', 'psv eindhoven', 'eindhoven'],
-  Feyenoord: ['feyenoord', 'feyenoord rotterdam', 'feijenoord'],
-  HVV: ['hvv', 'hvv den haag', 'haagse voetbal vereniging'],
-  'Sparta Rotterdam': ['sparta', 'sparta rotterdam'],
-  RAP: ['rap', 'rap amsterdam', 'avv rap'],
-  'Go Ahead Eagles': ['go ahead', 'go ahead eagles', 'ga eagles', 'go ahead deventer'],
-  HFC: ['hfc', 'hfc haarlem', 'koninklijke hfc', 'koninklijke haarlemsche football club'],
-  HBS: ['hbs', 'hbs craeyenhout', 'hbs den haag'],
-  'Willem II': ['willem ii', 'willem 2', 'willem ii tilburg'],
-  AZ: ['az', 'az alkmaar', 'alkmaar'],
-  'Heracles Almelo': ['heracles', 'heracles almelo'],
-  'ADO Den Haag': ['ado', 'ado den haag', 'den haag'],
-  RCH: ['rch', 'racing club heemstede', 'racing club haarlem'],
-  'NAC Breda': ['nac', 'nac breda'],
-  'FC Twente': ['fc twente', 'twente', 'fc twente enschede'],
-  'Roda JC': ['roda jc', 'roda', 'rapid jc', 'rapid'],
-  DOS: ['dos', 'dos utrecht', 'vv dos'],
-  DWS: ['dws', 'dws amsterdam', 'afc dws'],
-  'VV Concordia': ['concordia', 'vv concordia'],
-  'Quick Den Haag': ['quick', 'quick den haag'],
-  'Be Quick 1887': ['be quick', 'be quick 1887', 'be quick groningen'],
-  'SC Enschede': ['sc enschede', 'enschede'],
-  'FC Den Bosch': ['fc den bosch', 'den bosch', 'bvv'],
-  SVV: ['svv', 'svv schiedam'],
-  'SV Limburgia': ['limburgia', 'sv limburgia'],
-  'FC Eindhoven': ['fc eindhoven', 'eindhoven fc'],
-  'De Volewijckers': ['volewijckers', 'de volewijckers'],
-  'HFC Haarlem': ['hfc haarlem', 'haarlem'],
-};
 
 function normalize(text: string): string {
   return text
@@ -78,16 +44,19 @@ function isFuzzyMatch(input: string, target: string): boolean {
   return distance <= threshold;
 }
 
-function getClubVariants(club: string): string[] {
-  const aliases = clubAliases[club] ?? [];
-  return [club, ...aliases];
+function getVariants(winner: string, aliases: Record<string, string[]>): string[] {
+  return [winner, ...(aliases[winner] ?? [])];
 }
 
-export function checkClubAnswer(input: string, correctClub: string): AnswerCheck {
+export function checkWinnerAnswer(
+  input: string,
+  correctWinner: string,
+  aliases: Record<string, string[]>
+): AnswerCheck {
   const normalizedInput = normalize(input);
   if (!normalizedInput) return { result: 'wrong' };
 
-  const variants = getClubVariants(correctClub);
+  const variants = getVariants(correctWinner, aliases);
 
   for (const variant of variants) {
     if (normalize(variant) === normalizedInput) {
@@ -130,18 +99,11 @@ export function checkAnswer(
   input: string,
   correctAnswer: string,
   type: 'season-to-club' | 'club-to-season',
-  correctYear?: number
+  correctYear: number,
+  aliases: Record<string, string[]>
 ): AnswerCheck {
   if (type === 'season-to-club') {
-    return checkClubAnswer(input, correctAnswer);
+    return checkWinnerAnswer(input, correctAnswer, aliases);
   }
-  return checkYearAnswer(input, correctYear ?? parseInt(correctAnswer, 10));
-}
-
-export function getTitleCountForClub(club: string, year: number): number {
-  return championsWithWinner.filter((c) => c.club === club && c.year <= year).length;
-}
-
-export function getTotalTitlesForClub(club: string): number {
-  return championsWithWinner.filter((c) => c.club === club).length;
+  return checkYearAnswer(input, correctYear);
 }

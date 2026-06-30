@@ -3,15 +3,16 @@ import { generateQuiz, getScoreFeedback } from '../utils/quiz';
 import type { QuizOptions } from '../utils/quiz';
 import { checkAnswer } from '../utils/answerMatch';
 import { formatYear } from '../utils/format';
-import { getClubMeta } from '../data/clubMeta';
-import ClubLogo from './ClubLogo';
+import { getMeta, useDataset } from '../data/DatasetContext';
+import EntityLogo from './EntityLogo';
 import type { AnswerStatus } from '../types';
 import '../styles/Quiz.css';
 
-interface QuizProps extends QuizOptions {}
+type QuizProps = QuizOptions;
 
 export default function Quiz(props: QuizProps) {
-  const [questions, setQuestions] = useState(() => generateQuiz(props));
+  const dataset = useDataset();
+  const [questions, setQuestions] = useState(() => generateQuiz(dataset, props));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [input, setInput] = useState('');
@@ -32,7 +33,8 @@ export default function Quiz(props: QuizProps) {
         input,
         current.correctAnswer,
         current.type,
-        current.correctYear
+        current.correctYear,
+        dataset.aliases
       );
 
       setUserAnswer(input.trim());
@@ -47,7 +49,7 @@ export default function Quiz(props: QuizProps) {
         setStatus('wrong');
       }
     },
-    [isAnswered, input, current]
+    [isAnswered, input, current, dataset]
   );
 
   const handleApprove = () => {
@@ -69,7 +71,7 @@ export default function Quiz(props: QuizProps) {
   };
 
   const handleRestart = () => {
-    setQuestions(generateQuiz(props));
+    setQuestions(generateQuiz(dataset, props));
     setCurrentIndex(0);
     setScore(0);
     setInput('');
@@ -79,7 +81,7 @@ export default function Quiz(props: QuizProps) {
   };
 
   const wrongMeta =
-    isAnswered && !isCorrect ? getClubMeta(current.champion.club) : null;
+    isAnswered && !isCorrect ? getMeta(dataset, current.champion.winner) : null;
 
   if (finished) {
     const percentage = Math.round((score / questions.length) * 100);
@@ -121,10 +123,10 @@ export default function Quiz(props: QuizProps) {
         <div className="question">
           <h2>{current.question}</h2>
           {current.type === 'season-to-club' && (
-            <p className="question-hint">Typ de clubnaam</p>
+            <p className="question-hint">{dataset.winnerInputHint}</p>
           )}
           {current.type === 'club-to-season' && (
-            <p className="question-hint">Typ het jaartal (bijv. 1918)</p>
+            <p className="question-hint">Typ het jaartal (bijv. 1988)</p>
           )}
         </div>
 
@@ -136,7 +138,9 @@ export default function Quiz(props: QuizProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={
-                current.type === 'season-to-club' ? 'Bijv. Ajax' : 'Bijv. 1918'
+                current.type === 'season-to-club'
+                  ? dataset.winnerInputPlaceholder
+                  : 'Bijv. 1988'
               }
               autoFocus
               autoComplete="off"
@@ -148,9 +152,7 @@ export default function Quiz(props: QuizProps) {
         ) : (
           <>
             <div
-              className={`feedback-message ${
-                isCorrect ? 'correct' : 'incorrect'
-              }`}
+              className={`feedback-message ${isCorrect ? 'correct' : 'incorrect'}`}
             >
               {status === 'correct' && <p>✓ Goed antwoord!</p>}
               {status === 'fuzzy' && (
@@ -169,7 +171,7 @@ export default function Quiz(props: QuizProps) {
                     <strong>
                       {current.type === 'season-to-club' ? (
                         <span className="correct-with-logo">
-                          <ClubLogo club={current.correctAnswer} size={24} />
+                          <EntityLogo winner={current.correctAnswer} size={24} />
                           {current.correctAnswer}
                         </span>
                       ) : (
@@ -181,7 +183,7 @@ export default function Quiz(props: QuizProps) {
               )}
               {wrongMeta?.mnemonic && status === 'wrong' && (
                 <p className="mnemonic-hint">
-                  🧠 Ezelsbruggetje ({current.champion.club}): {wrongMeta.mnemonic}
+                  🧠 Ezelsbruggetje ({current.champion.winner}): {wrongMeta.mnemonic}
                 </p>
               )}
             </div>
@@ -193,7 +195,9 @@ export default function Quiz(props: QuizProps) {
                 </button>
               )}
               <button className="next-btn" onClick={handleNext}>
-                {currentIndex < questions.length - 1 ? 'Volgende vraag' : 'Bekijk resultaat'}
+                {currentIndex < questions.length - 1
+                  ? 'Volgende vraag'
+                  : 'Bekijk resultaat'}
               </button>
             </div>
           </>

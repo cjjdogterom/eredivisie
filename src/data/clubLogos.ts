@@ -31,7 +31,3 @@ export const clubLogoPaths: Record<string, string> = {
   'HFC Haarlem': '/logos/hfc-haarlem.svg',
 };
 
-export function getClubLogoPath(club: string | null): string | undefined {
-  if (!club) return undefined;
-  return clubLogoPaths[club];
-}

@@ -1,51 +1,61 @@
 import { Link, useParams } from 'react-router-dom';
-import { championsWithWinner } from '../data/champions';
-import { getClubMeta, slugToClub } from '../data/clubMeta';
-import ClubLogo from '../components/ClubLogo';
+import { getMeta, useDataset, winnersOnly } from '../data/DatasetContext';
+import EntityLogo from '../components/EntityLogo';
+import { slugToEntity } from '../utils/slug';
 import { formatYear } from '../utils/format';
 import '../styles/Clubs.css';
 
-export default function ClubDetail() {
-  const { slug } = useParams<{ slug: string }>();
-  const clubName = slug ? slugToClub(slug) : null;
+function groupByDecade(titles: { year: number }[]): [string, number][] {
+  const map = new Map<string, number>();
+  for (const t of titles) {
+    const decade = `${Math.floor(t.year / 10) * 10}s`;
+    map.set(decade, (map.get(decade) ?? 0) + 1);
+  }
+  return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+}
 
-  if (!clubName) {
+export default function ClubDetail() {
+  const dataset = useDataset();
+  const base = `/${dataset.id}`;
+  const { slug } = useParams<{ slug: string }>();
+  const winnerName = slug ? slugToEntity(slug) : null;
+
+  const eraLabels: Record<string, string> = {};
+  for (const e of dataset.eras) eraLabels[e.key] = e.label;
+
+  if (!winnerName) {
     return (
       <div className="clubs-page">
-        <p>Club niet gevonden.</p>
-        <Link to="/clubs">← Terug naar clubs</Link>
+        <p>{dataset.entityNoun} niet gevonden.</p>
+        <Link to={`${base}/winnaars`}>← Terug naar {dataset.entityNounPlural}</Link>
       </div>
     );
   }
 
-  const titles = championsWithWinner.filter((c) => c.club === clubName);
-  const meta = getClubMeta(clubName);
+  const titles = winnersOnly(dataset).filter((c) => c.winner === winnerName);
+  const meta = getMeta(dataset, winnerName);
 
   if (titles.length === 0) {
     return (
       <div className="clubs-page">
-        <p>Geen kampioenschappen gevonden voor {clubName}.</p>
-        <Link to="/clubs">← Terug naar clubs</Link>
+        <p>Geen titels gevonden voor {winnerName}.</p>
+        <Link to={`${base}/winnaars`}>← Terug naar {dataset.entityNounPlural}</Link>
       </div>
     );
   }
 
-  const eredivisieTitles = titles.filter((t) => t.era === 'eredivisie');
-
   return (
     <div className="clubs-page">
-      <Link to="/clubs" className="back-link">
-        ← Alle clubs
+      <Link to={`${base}/winnaars`} className="back-link">
+        ← Alle {dataset.entityNounPlural}
       </Link>
 
       <div className="club-detail-header">
-        <ClubLogo club={clubName} size={72} />
+        <EntityLogo winner={winnerName} size={72} />
         <div>
-          <h1>{clubName}</h1>
+          <h1>{winnerName}</h1>
           <p className="club-detail-stats">
-            {titles.length} landskampioenschappen
-            {eredivisieTitles.length > 0 &&
-              ` · ${eredivisieTitles.length} Eredivisie`}
+            {titles.length} {titles.length === 1 ? 'titel' : 'titels'} ({dataset.winnerNounPlural})
           </p>
           <p className="club-detail-range">
             Eerste titel: {formatYear(titles[0].year)} · Laatste titel:{' '}
@@ -60,21 +70,19 @@ export default function ClubDetail() {
             <span className="mnemonic-icon">🧠</span> Ezelsbruggetje
           </h2>
           <p className="mnemonic-short">{meta.mnemonic}</p>
-          {meta.mnemonicDetail && (
-            <p className="mnemonic-detail">{meta.mnemonicDetail}</p>
-          )}
+          {meta.mnemonicDetail && <p className="mnemonic-detail">{meta.mnemonicDetail}</p>}
         </div>
       )}
 
       <section className="club-titles-section">
-        <h2>Alle kampioenschappen</h2>
+        <h2>Alle titels</h2>
         <div className="club-titles-timeline">
           {titles.map((t) => (
             <div key={t.id} className="title-entry">
               <span className="title-season">{formatYear(t.year)}</span>
-              <span className={`era-tag era-${t.era}`}>
-                {t.era === 'eredivisie' ? 'Eredivisie' : 'Voor Eredivisie'}
-              </span>
+              {t.era && eraLabels[t.era] && (
+                <span className={`era-tag era-${t.era}`}>{eraLabels[t.era]}</span>
+              )}
               {t.note && <span className="title-note">{t.note}</span>}
             </div>
           ))}
@@ -96,13 +104,4 @@ export default function ClubDetail() {
       </section>
     </div>
   );
-}
-
-function groupByDecade(titles: { year: number }[]): [string, number][] {
-  const map = new Map<string, number>();
-  for (const t of titles) {
-    const decade = `${Math.floor(t.year / 10) * 10}s`;
-    map.set(decade, (map.get(decade) ?? 0) + 1);
-  }
-  return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
 }

@@ -1,54 +1,72 @@
 import { Link, useLocation } from 'react-router-dom';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import { useDataset } from '../data/DatasetContext';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-const navItems = [
-  { path: '/', label: 'Home', icon: '🏠' },
-  { path: '/overzicht', label: 'Overzicht', icon: '📋' },
-  { path: '/clubs', label: 'Clubs', icon: '⚽' },
-  { path: '/overhoren', label: 'Overhoren', icon: '🎓' },
-  { path: '/statistieken', label: 'Statistieken', icon: '📊' },
-];
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const dataset = useDataset();
+  const base = `/${dataset.id}`;
+
+  const navItems = [
+    { path: base, label: 'Home', icon: '🏠', exact: true },
+    { path: `${base}/overzicht`, label: 'Overzicht', icon: '📋', exact: false },
+    { path: `${base}/winnaars`, label: capitalize(dataset.entityNounPlural), icon: '⚽', exact: false },
+    { path: `${base}/overhoren`, label: 'Overhoren', icon: '🎓', exact: false },
+    { path: `${base}/statistieken`, label: 'Statistieken', icon: '📊', exact: false },
+  ];
+
+  const themeStyle = {
+    '--primary-color': dataset.theme.primary,
+    '--primary-dark': dataset.theme.primaryDark,
+    '--secondary-color': dataset.theme.secondary,
+    '--accent-color': dataset.theme.accent,
+  } as CSSProperties;
 
   return (
-    <div className="app-layout">
+    <div className="app-layout" style={themeStyle}>
       <header className="site-header">
         <div className="header-inner">
-          <Link to="/" className="brand">
-            <span className="brand-icon">🏆</span>
+          <Link to={base} className="brand">
+            <span className="brand-icon">{dataset.icon}</span>
             <div>
-              <span className="brand-title">Eredivisie Kampioenen</span>
-              <span className="brand-subtitle">Sinds 1889</span>
+              <span className="brand-title">{dataset.title}</span>
+              <span className="brand-subtitle">{dataset.subtitle}</span>
             </div>
           </Link>
           <nav className="main-nav">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`nav-link ${
-                  location.pathname === item.path ||
-                  (item.path === '/clubs' && location.pathname.startsWith('/clubs'))
-                    ? 'active'
-                    : ''
-                }`}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = item.exact
+                ? location.pathname === item.path
+                : location.pathname.startsWith(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`nav-link ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  {item.label}
+                </Link>
+              );
+            })}
+            <Link to="/" className="nav-link nav-link-trainers">
+              <span className="nav-icon">🔁</span>
+              Alle trainers
+            </Link>
           </nav>
         </div>
       </header>
       <main className="site-main">{children}</main>
       <footer className="site-footer">
-        <p>Data gebaseerd op KNVB-historie en RSSSF · {new Date().getFullYear()}</p>
+        <p>Data gebaseerd op KNVB-historie, UEFA, FIFA en RSSSF · {new Date().getFullYear()}</p>
       </footer>
     </div>
   );

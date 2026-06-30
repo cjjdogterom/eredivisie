@@ -5,7 +5,7 @@
 }
 
 .site-header {
-  background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark, #1e3a8a));
   color: white;
   padding: 1rem 1.5rem;
   box-shadow: var(--shadow-lg);
@@ -133,7 +133,7 @@
 }
 
 .btn-primary:hover {
-  background: #1e3a8a;
+  background: var(--primary-dark, #1e3a8a);
   transform: translateY(-1px);
 }
 

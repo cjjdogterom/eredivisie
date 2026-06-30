@@ -1,51 +1,52 @@
-# Eredivisie Kampioenen Overhoringsplatform
+# Voetbalwinnaars — Overhoringsplatform
 
-Een interactief overhoringsplatform en overzicht voor alle kampioenen van de Nederlandse Eredivisie vanaf 1889.
+Een interactief overhoringsplatform en overzicht voor alle winnaars van het Nederlandse en Europese voetbal. Kies op de startpagina een **trainer** en leer of overhoor jezelf.
 
-## Functies
+## Trainers
 
-- 📚 **Overzicht**: Compleet overzicht van alle Eredivisie-kampioenen sinds 1889
-- 🎓 **Oefenmodus**: Test je kennis met quizzen over de kampioenen
-- 📊 **Statistieken**: Interessante data en feiten over de champions
-- 🏆 **Interactief**: Leer en test jezelf op een leuke manier
+- 🏆 **Eredivisie** — alle Nederlandse landskampioenen sinds 1889
+- 🏆 **KNVB Beker** — alle bekerwinnaars sinds 1899
+- ⭐ **Europacup I / Champions League** — alle Europese topclub-winnaars sinds 1956
+- 🌍 **WK Voetbal** — alle wereldkampioenen (mannen) sinds 1930
+- 🇪🇺 **EK Voetbal** — alle Europees kampioenen (mannen) sinds 1960
+
+## Functies (per trainer)
+
+- 📋 **Overzicht** — doorzoekbaar en filterbaar overzicht van alle edities
+- 🎓 **Overhoren** — quizzen (jaar → winnaar, winnaar → jaar, gemengd) met spelfout-tolerantie en ezelsbruggetjes
+- ⚽ **Per club / land** — alle titels per winnaar, met geheugensteuntjes
+- 📊 **Statistieken** — ranglijst van meeste titels, records en wist-je-datjes
+
+## Technologie
+
+- React 18 + TypeScript + React Router
+- Vite als build-tool
+- Data per trainer in `src/data/datasets/`
+
+## Lokaal draaien
+
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
 
 ## Structuur
 
 ```
-eredivisie/
+src/
+├── components/        # Layout, Quiz, EntityLogo
 ├── data/
-│   ├── champions.json          # Alle kampioenen met details
-│   └── README.md               # Data documentatie
-├── src/
-│   ├── components/             # React componenten
-│   ├── pages/                  # Pagina's
-│   ├── api/                    # API routes
-│   └── styles/                 # CSS/styling
-├── public/                     # Statische files
-├── package.json
-├── index.html
-└── README.md
-```
-
-## Technologie Stack
-
-- **Frontend**: React, TypeScript, CSS3
-- **Backend**: Node.js/Express (optioneel voor API)
-- **Data**: JSON (alle kampioenen gegevens)
-- **Build**: Vite/Webpack
-
-## Installatie
-
-```bash
-# Clone de repository
-git clone https://github.com/cjjdogterom/eredivisie.git
-cd eredivisie
-
-# Installeer dependencies
-npm install
-
-# Start development server
-npm run dev
+│   ├── datasets/      # één bestand per trainer (eredivisie, knvb-beker, …)
+│   └── DatasetContext.tsx
+├── pages/             # Home, Overview, QuizPage, Stats, Clubs, ClubDetail, TrainerPicker
+├── styles/
+└── utils/
 ```
 
 ## Licentie

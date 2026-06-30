@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import Quiz from '../components/Quiz';
 import { getPoolSize } from '../utils/quiz';
+import { useDataset } from '../data/DatasetContext';
 import type { QuizMode, QuizOrder } from '../types';
 
 const modes: { value: QuizMode; label: string; description: string }[] = [
   {
     value: 'season-to-club',
-    label: 'Jaar → Club',
-    description: 'Welke club werd kampioen in een bepaald jaar?',
+    label: 'Jaar → Winnaar',
+    description: 'Wie won er in een bepaald jaar?',
   },
   {
     value: 'club-to-season',
-    label: 'Club → Jaar',
-    description: 'In welk jaar werd een club kampioen?',
+    label: 'Winnaar → Jaar',
+    description: 'In welk jaar won een bepaalde winnaar?',
   },
   {
     value: 'mixed',
     label: 'Gemengd',
-    description: 'Afwisselend jaar→club en club→jaar.',
+    description: 'Afwisselend jaar→winnaar en winnaar→jaar.',
   },
 ];
 
@@ -30,26 +31,30 @@ const orders: { value: QuizOrder; label: string; description: string }[] = [
   {
     value: 'chronological',
     label: 'Op volgorde',
-    description: 'Chronologisch van oud naar nieuw (1889 → heden).',
+    description: 'Chronologisch van oud naar nieuw.',
   },
   {
     value: 'reverse-chronological',
     label: 'Omgekeerd',
-    description: 'Van nieuw naar oud (heden → 1889).',
+    description: 'Van nieuw naar oud.',
   },
 ];
 
 export default function QuizPage() {
+  const dataset = useDataset();
+  const hasEras = dataset.eras.length > 1;
+
   const [started, setStarted] = useState(false);
   const [mode, setMode] = useState<QuizMode>('mixed');
   const [order, setOrder] = useState<QuizOrder>('random');
-  const [eraFilter, setEraFilter] = useState<'all' | 'eredivisie' | 'voor-eredivisie'>('all');
+  const [eraFilter, setEraFilter] = useState<string>('all');
   const [questionCount, setQuestionCount] = useState(10);
   const [allYears, setAllYears] = useState(false);
   const [quizKey, setQuizKey] = useState(0);
 
-  const poolSize = getPoolSize(eraFilter);
+  const poolSize = getPoolSize(dataset, eraFilter);
   const effectiveCount = allYears ? poolSize : questionCount;
+  const maxSlider = Math.min(50, Math.max(5, getPoolSize(dataset, 'all')));
 
   const handleStart = () => {
     setQuizKey((k) => k + 1);
@@ -60,6 +65,7 @@ export default function QuizPage() {
     setAllYears(true);
     setMode('mixed');
     setOrder('chronological');
+    setEraFilter('all');
     setQuizKey((k) => k + 1);
     setStarted(true);
   };
@@ -69,7 +75,13 @@ export default function QuizPage() {
       <div className="quiz-page">
         <div className="page-header compact">
           <h1>Overhoring</h1>
-          <button className="btn btn-outline" onClick={() => { setStarted(false); setAllYears(false); }}>
+          <button
+            className="btn btn-outline"
+            onClick={() => {
+              setStarted(false);
+              setAllYears(false);
+            }}
+          >
             ← Instellingen
           </button>
         </div>
@@ -89,15 +101,15 @@ export default function QuizPage() {
     <div className="quiz-page">
       <div className="page-header">
         <h1>Overhoringsmodus</h1>
-        <p>Stel je quiz samen en test je kennis van de Nederlandse landskampioenen.</p>
+        <p>Stel je quiz samen en test je kennis van de {dataset.winnerNounPlural}.</p>
       </div>
 
       <div className="quiz-quick-start">
         <button className="btn btn-primary btn-large" onClick={handleStartAllYears}>
-          Alle {poolSize} jaren overhoren (gemengd, op volgorde)
+          Alle {getPoolSize(dataset, 'all')} overhoren (gemengd, op volgorde)
         </button>
         <p className="quick-start-hint">
-          Doorloop chronologisch elk kampioenschap van 1889 tot heden.
+          Doorloop chronologisch elke winnaar uit de geschiedenis.
         </p>
       </div>
 
@@ -134,30 +146,35 @@ export default function QuizPage() {
           </div>
         </section>
 
-        <section className="setup-section">
-          <h2>Tijdperk</h2>
-          <div className="era-options">
-            {[
-              { value: 'all' as const, label: `Alle jaren (${getPoolSize('all')})` },
-              { value: 'eredivisie' as const, label: `Alleen Eredivisie (${getPoolSize('eredivisie')})` },
-              {
-                value: 'voor-eredivisie' as const,
-                label: `Voor Eredivisie (${getPoolSize('voor-eredivisie')})`,
-              },
-            ].map((opt) => (
-              <label key={opt.value} className="era-option">
+        {hasEras && (
+          <section className="setup-section">
+            <h2>Periode</h2>
+            <div className="era-options">
+              <label className="era-option">
                 <input
                   type="radio"
                   name="era"
-                  value={opt.value}
-                  checked={eraFilter === opt.value}
-                  onChange={() => setEraFilter(opt.value)}
+                  value="all"
+                  checked={eraFilter === 'all'}
+                  onChange={() => setEraFilter('all')}
                 />
-                {opt.label}
+                Alle ({getPoolSize(dataset, 'all')})
               </label>
-            ))}
-          </div>
-        </section>
+              {dataset.eras.map((era) => (
+                <label key={era.key} className="era-option">
+                  <input
+                    type="radio"
+                    name="era"
+                    value={era.key}
+                    checked={eraFilter === era.key}
+                    onChange={() => setEraFilter(era.key)}
+                  />
+                  {era.label} ({getPoolSize(dataset, era.key)})
+                </label>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="setup-section">
           <h2>Aantal vragen</h2>
@@ -167,7 +184,7 @@ export default function QuizPage() {
               checked={allYears}
               onChange={(e) => setAllYears(e.target.checked)}
             />
-            Alle jaren ({poolSize} vragen)
+            Alles ({poolSize} vragen)
           </label>
           {!allYears && (
             <>
@@ -175,16 +192,16 @@ export default function QuizPage() {
               <input
                 type="range"
                 min={5}
-                max={Math.min(50, poolSize)}
+                max={maxSlider}
                 step={5}
-                value={questionCount}
+                value={Math.min(questionCount, maxSlider)}
                 onChange={(e) => setQuestionCount(Number(e.target.value))}
                 className="question-slider"
               />
               <div className="slider-labels">
                 <span>5</span>
-                <span>25</span>
-                <span>{Math.min(50, poolSize)}</span>
+                <span>{Math.round(maxSlider / 2)}</span>
+                <span>{maxSlider}</span>
               </div>
             </>
           )}

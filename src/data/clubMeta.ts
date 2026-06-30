@@ -1,4 +1,3 @@
-import { getClubLogoPath } from './clubLogos';
 
 export interface ClubMeta {
   color: string;
@@ -205,34 +204,3 @@ export const clubMeta: Record<string, ClubMeta> = {
   },
 };
 
-const defaultMeta: ClubMeta = {
-  color: '#64748b',
-  shortName: '???',
-};
-
-export function getClubMeta(club: string | null): ClubMeta {
-  if (!club) return defaultMeta;
-
-  const base =
-    clubMeta[club] ??
-    ({
-      ...defaultMeta,
-      shortName: club
-        .split(' ')
-        .map((w) => w[0])
-        .join('')
-        .slice(0, 3)
-        .toUpperCase(),
-    } as ClubMeta);
-
-  const logo = getClubLogoPath(club);
-  return logo ? { ...base, logo } : base;
-}
-
-export function clubToSlug(club: string): string {
-  return encodeURIComponent(club);
-}
-
-export function slugToClub(slug: string): string | null {
-  return decodeURIComponent(slug);
-}
