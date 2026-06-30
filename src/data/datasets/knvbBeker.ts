@@ -149,6 +149,45 @@ const meta: Record<string, EntityMeta> = {
   'NAC Breda': { color: '#FFD700', shortName: 'NAC', mnemonic: '1973 — bekerwinst.', mnemonicDetail: 'NAC won de beker in 1973.' },
 };
 
+const logos: Record<string, string> = {
+  Ajax: '/logos/ajax.png',
+  PSV: '/logos/psv.png',
+  Feyenoord: '/logos/feyenoord.svg',
+  'FC Twente': '/logos/fc-twente.png',
+  'FC Utrecht': '/logos/fc-utrecht.png',
+  AZ: '/logos/az.svg',
+  'Roda JC': '/logos/roda-jc.png',
+  'Sparta Rotterdam': '/logos/sparta-rotterdam.png',
+  'Willem II': '/logos/willem-ii.png',
+  'Go Ahead Eagles': '/logos/go-ahead-eagles.png',
+  'Quick Den Haag': '/logos/quick-den-haag.png',
+  'PEC Zwolle': '/logos/pec-zwolle.png',
+  'FC Groningen': '/logos/fc-groningen.png',
+  Vitesse: '/logos/vitesse.png',
+  'sc Heerenveen': '/logos/heerenveen.png',
+  'NAC Breda': '/logos/nac-breda.png',
+  HFC: '/logos/hfc.png',
+  'FC Eindhoven': '/logos/fc-eindhoven.png',
+  RCH: '/logos/rch.png',
+  RAP: '/logos/rap.png',
+  'ADO Den Haag': '/logos/ado-den-haag.png',
+  'FC Den Haag': '/logos/ado-den-haag.png',
+  Concordia: '/logos/vv-concordia.png',
+  Haarlem: '/logos/hfc-haarlem.svg',
+  'VVV-Venlo': '/logos/vvv-venlo.png',
+};
+
+for (const [name, path] of Object.entries(logos)) {
+  const initials = name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 3)
+    .toUpperCase();
+  const base = meta[name] ?? { color: '#ea580c', shortName: initials };
+  meta[name] = { ...base, logo: path };
+}
+
 const aliases: Record<string, string[]> = {
   Ajax: ['ajax', 'afc ajax', 'ajax amsterdam'],
   PSV: ['psv', 'psv eindhoven'],

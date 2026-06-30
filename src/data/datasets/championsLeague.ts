@@ -100,6 +100,38 @@ const meta: Record<string, EntityMeta> = {
   'Paris Saint-Germain': { color: '#004170', shortName: 'PSG', mnemonic: '2025 — allereerste titel.', mnemonicDetail: 'PSG won eindelijk de Champions League in 2025.' },
 };
 
+const logos: Record<string, string> = {
+  'Real Madrid': '/logos/real-madrid.png',
+  'AC Milan': '/logos/ac-milan.png',
+  'Bayern München': '/logos/bayern-munchen.png',
+  Liverpool: '/logos/liverpool.png',
+  'FC Barcelona': '/logos/fc-barcelona.png',
+  Ajax: '/logos/ajax.png',
+  Internazionale: '/logos/internazionale.png',
+  'Manchester United': '/logos/manchester-united.png',
+  Juventus: '/logos/juventus.png',
+  Benfica: '/logos/benfica.png',
+  'Nottingham Forest': '/logos/nottingham-forest.png',
+  Celtic: '/logos/celtic.png',
+  Feyenoord: '/logos/feyenoord.svg',
+  PSV: '/logos/psv.png',
+  'FC Porto': '/logos/fc-porto.png',
+  'Aston Villa': '/logos/aston-villa.png',
+  'Hamburger SV': '/logos/hamburger-sv.png',
+  'Steaua Boekarest': '/logos/steaua-boekarest.png',
+  'Rode Ster Belgrado': '/logos/rode-ster-belgrado.png',
+  'Olympique Marseille': '/logos/olympique-marseille.png',
+  'Borussia Dortmund': '/logos/borussia-dortmund.png',
+  Chelsea: '/logos/chelsea.png',
+  'Manchester City': '/logos/manchester-city.png',
+  'Paris Saint-Germain': '/logos/paris-saint-germain.png',
+};
+
+for (const [name, path] of Object.entries(logos)) {
+  const base = meta[name] ?? { color: '#0b1f4d', shortName: name.slice(0, 3).toUpperCase() };
+  meta[name] = { ...base, logo: path };
+}
+
 const aliases: Record<string, string[]> = {
   'Real Madrid': ['real madrid', 'real', 'madrid'],
   'AC Milan': ['ac milan', 'milan', 'ac milaan'],
