@@ -9,6 +9,7 @@ import QuizPage from './pages/QuizPage';
 import Stats from './pages/Stats';
 import Clubs from './pages/Clubs';
 import ClubDetail from './pages/ClubDetail';
+import Learn from './pages/Learn';
 import './styles/App.css';
 
 function DatasetApp() {
@@ -26,6 +27,7 @@ function DatasetApp() {
           <Route path="/" element={<Home />} />
           <Route path="overzicht" element={<Overview />} />
           <Route path="overhoren" element={<QuizPage />} />
+          <Route path="leren" element={<Learn />} />
           <Route path="statistieken" element={<Stats />} />
           <Route path="winnaars" element={<Clubs />} />
           <Route path="winnaars/:slug" element={<ClubDetail />} />

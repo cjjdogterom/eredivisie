@@ -20,6 +20,7 @@ export default function Layout({ children }: LayoutProps) {
     { path: `${base}/overzicht`, label: 'Overzicht', icon: '📋', exact: false },
     { path: `${base}/winnaars`, label: capitalize(dataset.entityNounPlural), icon: '⚽', exact: false },
     { path: `${base}/overhoren`, label: 'Overhoren', icon: '🎓', exact: false },
+    { path: `${base}/leren`, label: 'Leren', icon: '📚', exact: false },
     { path: `${base}/statistieken`, label: 'Statistieken', icon: '📊', exact: false },
   ];
 

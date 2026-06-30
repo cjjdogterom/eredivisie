@@ -453,3 +453,93 @@
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
+
+/* ── Mobiele optimalisatie ─────────────────────────────── */
+@media (max-width: 700px) {
+  .site-header {
+    padding: 0.6rem 0.9rem;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .brand {
+    justify-content: flex-start;
+  }
+
+  .brand-icon {
+    font-size: 1.6rem;
+  }
+
+  .brand-title {
+    font-size: 1.05rem;
+  }
+
+  /* Nav horizontaal scrollbaar i.p.v. hoog wrappen */
+  .main-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.35rem;
+    padding-bottom: 0.2rem;
+    scrollbar-width: none;
+    margin: 0 -0.2rem;
+  }
+
+  .main-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.82rem;
+  }
+
+  .site-main {
+    padding: 1.25rem 1rem;
+  }
+
+  .page-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .hero {
+    padding: 1.5rem 1.1rem;
+    gap: 1.25rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-actions .btn,
+  .quiz-setup .btn-large,
+  .quiz-quick-start .btn-large {
+    width: 100%;
+  }
+
+  /* Voorkom iOS-zoom: inputs minstens 16px */
+  .search-input,
+  .filter-select,
+  .answer-input {
+    font-size: 16px;
+  }
+
+  .mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .champions-table,
+  .stats-table {
+    font-size: 0.85rem;
+  }
+}

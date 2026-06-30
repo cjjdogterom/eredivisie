@@ -69,6 +69,11 @@ export default function Home() {
             <h3>Overhoringsmodus</h3>
             <p>Test jezelf met quizzen: wie won welk jaar, en in welk jaar won wie?</p>
           </Link>
+          <Link to={`${base}/leren`} className="feature-card">
+            <span className="feature-icon">📚</span>
+            <h3>Jaartallen leren</h3>
+            <p>Leer stap voor stap, telkens 6 jaren op rij: bekijken, oefenen, door naar de volgende 6.</p>
+          </Link>
           <Link to={`${base}/winnaars`} className="feature-card">
             <span className="feature-icon">⚽</span>
             <h3>Per {dataset.entityNoun}</h3>
