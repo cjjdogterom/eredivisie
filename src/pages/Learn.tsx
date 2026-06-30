@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { getMeta, useDataset } from '../data/DatasetContext';
 import EntityLogo from '../components/EntityLogo';
 import { getLearnChunks, pickQuestion } from '../utils/learn';
@@ -31,6 +31,7 @@ export default function Learn() {
   const [current, setCurrent] = useState<Champion | null>(null);
   const [input, setInput] = useState('');
   const [status, setStatus] = useState<'pending' | 'correct' | 'wrong'>('pending');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     try {
@@ -59,7 +60,7 @@ export default function Learn() {
     setStatus(check.result === 'wrong' ? 'wrong' : 'correct');
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!current) return;
     const newMastered = new Set(mastered);
     if (status === 'correct') newMastered.add(current.id);
@@ -75,7 +76,34 @@ export default function Learn() {
     } else {
       setCurrent(next);
     }
-  };
+  }, [current, mastered, status, chunk, chunkIndex, total]);
+
+  // Focus het invoerveld zodra er een nieuwe vraag staat.
+  useEffect(() => {
+    if (phase === 'practice' && status === 'pending') {
+      inputRef.current?.focus();
+    }
+  }, [phase, status, current]);
+
+  // Goed → automatisch door na 1,2s. Beantwoord → Enter gaat ook door.
+  useEffect(() => {
+    if (phase !== 'practice' || status === 'pending') return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleNext();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+
+    const timer = status === 'correct' ? window.setTimeout(handleNext, 1200) : undefined;
+
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [phase, status, handleNext]);
 
   const goToBlock = (index: number) => {
     setChunkIndex(index);
@@ -169,6 +197,7 @@ export default function Learn() {
           {status === 'pending' ? (
             <form className="answer-form" onSubmit={handleSubmit}>
               <input
+                ref={inputRef}
                 type="text"
                 className="answer-input"
                 value={input}
@@ -202,7 +231,7 @@ export default function Learn() {
                 )}
               </div>
               <button className="next-btn" onClick={handleNext}>
-                Volgende
+                Volgende ⏎
               </button>
             </>
           )}

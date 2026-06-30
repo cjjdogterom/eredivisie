@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { generateQuiz, getScoreFeedback } from '../utils/quiz';
 import type { QuizOptions } from '../utils/quiz';
 import { checkAnswer } from '../utils/answerMatch';
@@ -19,6 +19,7 @@ export default function Quiz(props: QuizProps) {
   const [status, setStatus] = useState<AnswerStatus>('pending');
   const [userAnswer, setUserAnswer] = useState('');
   const [finished, setFinished] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const current = questions[currentIndex];
   const isAnswered = status !== 'pending';
@@ -59,7 +60,7 @@ export default function Quiz(props: QuizProps) {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((i) => i + 1);
       setInput('');
@@ -68,7 +69,36 @@ export default function Quiz(props: QuizProps) {
     } else {
       setFinished(true);
     }
-  };
+  }, [currentIndex, questions.length]);
+
+  // Focus het invoerveld zodra er een nieuwe (onbeantwoorde) vraag staat.
+  useEffect(() => {
+    if (status === 'pending' && !finished) {
+      inputRef.current?.focus();
+    }
+  }, [currentIndex, status, finished]);
+
+  // Goed → automatisch door na 1,2s. Beantwoord → Enter gaat ook door.
+  useEffect(() => {
+    if (status === 'pending' || finished) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleNext();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+
+    const autoAdvance =
+      status === 'correct' || status === 'fuzzy' || status === 'approved';
+    const timer = autoAdvance ? window.setTimeout(handleNext, 1200) : undefined;
+
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [status, finished, handleNext]);
 
   const handleRestart = () => {
     setQuestions(generateQuiz(dataset, props));
@@ -133,6 +163,7 @@ export default function Quiz(props: QuizProps) {
         {!isAnswered ? (
           <form className="answer-form" onSubmit={handleSubmit}>
             <input
+              ref={inputRef}
               type="text"
               className="answer-input"
               value={input}
@@ -196,8 +227,8 @@ export default function Quiz(props: QuizProps) {
               )}
               <button className="next-btn" onClick={handleNext}>
                 {currentIndex < questions.length - 1
-                  ? 'Volgende vraag'
-                  : 'Bekijk resultaat'}
+                  ? 'Volgende vraag ⏎'
+                  : 'Bekijk resultaat ⏎'}
               </button>
             </div>
           </>
